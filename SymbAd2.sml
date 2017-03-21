@@ -58,30 +58,28 @@ fun scalar x v = Vector.map (fn e => x * e) v
 type dualnum = real * real vector (* the result and the derrivative *)
 
 
-fun forward expr xs =
+fun forward xs expr =
   let val n = Vector.length xs
       (* diffEval : Expr -> dualnum *)
       fun diffEval expr =
         case expr of
-        X i          => (lookup xs i, direction n i 1.0)
-      | Con c        => (c, zero n)
-      | Neg e        => let val (ex, ed) = diffEval e
-                        in (~ex, Vector.map ~ ed) end
-      | Plus(e1, e2) => let val (ex1, ed1) = diffEval e1
-                            val (ex2, ed2) = diffEval e2
-                        in (ex1 + ex2, zipWith op+ ed1 ed2) end
-
-      | Mult (e, e') => let val (ex, ed)   = diffEval e
-                            val (ex', ed') = diffEval e'
-                        in (ex * ex', zipWith op+ (scalar ex ed') (scalar ex' ed)) end
-      | Exp e        => let val (ex, ed) = diffEval e
-                            val exp_ex = Math.exp ex
-                        in (exp_ex, scalar exp_ex ed) end
-
-      | Sin e        => let val (ex, ed) = diffEval e
-                        in  (Math.sin ex, scalar (Math.cos ex) ed) end
-      | Cos e        => let val (ex, ed) = diffEval e
-                        in  (Math.cos ex, scalar (~(Math.sin ex)) ed) end
+            X i          => (lookup xs i, direction n i 1.0)
+          | Con c        => (c, zero n)
+          | Neg e        => let val (ex, ed) = diffEval e
+                            in (~ex, Vector.map ~ ed) end
+          | Plus(e1, e2) => let val (ex1, ed1) = diffEval e1
+                                val (ex2, ed2) = diffEval e2
+                            in (ex1 + ex2, zipWith op+ ed1 ed2) end
+          | Mult (e, e') => let val (ex, ed)   = diffEval e
+                                val (ex', ed') = diffEval e'
+                            in (ex * ex', zipWith op+ (scalar ex ed') (scalar ex' ed)) end
+          | Exp e        => let val (ex, ed) = diffEval e
+                                val exp_ex = Math.exp ex
+                            in (exp_ex, scalar exp_ex ed) end                                
+          | Sin e        => let val (ex, ed) = diffEval e
+                            in  (Math.sin ex, scalar (Math.cos ex) ed) end
+          | Cos e        => let val (ex, ed) = diffEval e
+                            in  (Math.cos ex, scalar (~(Math.sin ex)) ed) end
   in #2(diffEval expr) end
 
 
