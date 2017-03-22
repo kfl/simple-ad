@@ -1,5 +1,5 @@
 
-type dualnum = real * real (* the result and the derrivative *)
+type dualnum = real * real (* the result and the derivative *)
 
 
 (* diffEval : Expr -> real -> dualnum *)
@@ -16,7 +16,6 @@ type dualnum = real * real (* the result and the derrivative *)
 
 
 
-                          
 
 
 
@@ -29,7 +28,8 @@ type dualnum = real * real (* the result and the derrivative *)
 
 
 
-                          
+
+
 fun diffEval exp x =
     case exp of
         X            => (x, 1.0)
@@ -45,6 +45,3 @@ fun diffEval exp x =
                         in (ex * ex', ex * ed' + ed * ex') end
       | Exp e        => let val (ex, ed) = diffEval e x
                         in (Math.exp ex, Math.exp ex * ed) end
-
-
-

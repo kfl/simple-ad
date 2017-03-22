@@ -55,7 +55,7 @@ fun direction n i x = Vector.tabulate(n, fn j => if i = j then x else 0.0)
 fun scalar x v = Vector.map (fn e => x * e) v
 
 
-type dualnum = real * real vector (* the result and the derrivative *)
+type dualnum = real * real vector (* the result and the derivative *)
 
 
 fun forward xs expr =
@@ -75,7 +75,7 @@ fun forward xs expr =
                             in (ex * ex', zipWith op+ (scalar ex ed') (scalar ex' ed)) end
           | Exp e        => let val (ex, ed) = diffEval e
                                 val exp_ex = Math.exp ex
-                            in (exp_ex, scalar exp_ex ed) end                                
+                            in (exp_ex, scalar exp_ex ed) end
           | Sin e        => let val (ex, ed) = diffEval e
                             in  (Math.sin ex, scalar (Math.cos ex) ed) end
           | Cos e        => let val (ex, ed) = diffEval e

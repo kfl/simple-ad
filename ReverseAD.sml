@@ -1,6 +1,6 @@
 
 (* Labled expression with labels of type 'e on sub expressions, and
-   labels of type 'v on variables. Constants are unlabled. 
+   labels of type 'v on variables. Constants are unlabled.
 *)
 datatype ('e, 'v) Labled =
            X    of 'v * int
@@ -12,7 +12,7 @@ datatype ('e, 'v) Labled =
          | Sin  of ('e, 'v) Expr         (* sin x *)
          | Cos  of ('e, 'v) Expr         (* cos x *)
 withtype ('e, 'v) Expr = 'e * ('e, 'v) Labled
-                            
+
 fun lookup xs i = Vector.sub(xs, i)
 
 fun eval (_, exp) xs =
@@ -39,7 +39,7 @@ fun scalarS x v = Vector.map (fn e => Mult(x, e)) v
 (* evalDecorate label each sub expression with its evaluation *)
 fun evalDecorate xs expr =
   let fun decorate (_, expr) =
-        case expr of 
+        case expr of
             X(vlab, i)   => (lookup xs i, X(vlab, i))
           | Con c        => (c, Con c)
           | Neg e        => let val d as (ex, _) = decorate e
@@ -61,7 +61,7 @@ fun evalDecorate xs expr =
 (* sensibilityDecorate pushes sensibility to variable leafs *)
 fun sensibilityDecorate expr =
   let fun decorate sens (elab, expr) =
-        (elab, case expr of 
+        (elab, case expr of
                    X(_, i)      => X(sens, i)
                  | Con c        => Con c
                  | Neg e        => let val d = decorate (~sens) e
@@ -91,14 +91,14 @@ fun addAt xs i v = Vector.mapi (fn(j, x) => if i = j then x+v else x) xs
 fun reduce n expr =
   let fun fold (_, expr) acc =
         case expr of
-            X(sens, i) => addAt acc i sens
-          | Con _ => acc
-          | Neg e => fold e acc
+            X(sens, i)   => addAt acc i sens
+          | Con _        => acc
+          | Neg e        => fold e acc
           | Plus(e1, e2) => fold e2 (fold e1 acc)
           | Mult(e1, e2) => fold e2 (fold e1 acc)
-          | Exp e => fold e acc
-          | Sin e => fold e acc
-          | Cos e => fold e acc
+          | Exp e        => fold e acc
+          | Sin e        => fold e acc
+          | Cos e        => fold e acc
   in  fold expr (zero n)
   end
 

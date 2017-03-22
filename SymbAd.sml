@@ -30,7 +30,7 @@ fun diff exp =
 fun dumbAD exp x = eval (diff exp) x
 
 
-type dualnum = real * real (* the result and the derrivative *)
+type dualnum = real * real (* the result and the derivative *)
 
 (* diffEval : Expr -> real -> dualnum *)
 
@@ -51,7 +51,7 @@ fun diffEval exp x =
                         in (Math.exp ex, Math.exp ex * ed) end
 
 fun forward exp x = #2(diffEval exp x)
-                            
+
 (* Utility functions *)
 
 fun pp exp =
@@ -67,7 +67,7 @@ fun pp exp =
       | Mult(e1, e2) => concat["(", pp e1, " * ", pp e2, ")"]
       | Exp e        => concat["e^", pp e]
 
-                        
+
 fun makeExpr n =
     let fun minus e1 e2 = Plus(e1, Neg e2)
         fun step e = Exp (minus e One)
