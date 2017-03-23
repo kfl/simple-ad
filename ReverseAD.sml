@@ -1,6 +1,7 @@
-
-datatype Labled = datatype Expr.Labled
-
+local
+    datatype Labelled = datatype Expr.Labelled
+in
+                               
 (* evalDecorate label each sub expression with its evaluation *)
 fun evalDecorate xs expr =
   let fun decorate (_, expr) =
@@ -79,17 +80,6 @@ fun reverse xs expr =
 
 
 
-
-
-
-
-
-
-
-
-
-      
-
 (* derivativeDecorate and reduce can be fused *)
 fun derivativeReduce n expr =
   let infix +=
@@ -124,10 +114,6 @@ fun reverse_fused xs expr =
       val ed = evalDecorate xs expr
   in  derivativeReduce n ed
   end
-
-
-
-
 
 
 
@@ -191,3 +177,5 @@ fun reverse_imp xs expr =
       val _ = evalUpdate xs expr
   in  derivativeReduce2 n expr
   end
+
+end

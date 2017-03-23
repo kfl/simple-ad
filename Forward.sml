@@ -1,17 +1,8 @@
-(*
-datatype Expr = X    of int
-              | Con  of real
-              | Neg  of Expr
-              | Plus of Expr * Expr
-              | Mult of Expr * Expr
-              | Exp  of Expr         (* e^x *)
-              | Sin  of Expr         (* sin x *)
-              | Cos  of Expr         (* cos x *)
-*)
+local
+    datatype Labelled = datatype Expr.Labelled
+    fun & e = Expr.unit_elab e
+in
 
-datatype Labled = datatype Expr.Labled
-val & = Expr.&
-                               
 fun zipWith f xs ys = Vector.mapi (fn (i, x) => f(x, Vector.sub(ys, i))) xs
 
 
@@ -19,7 +10,7 @@ fun zeroS n = Vector.tabulate(n, fn _ => Expr.const 0.0)
 fun directionS n i = Vector.tabulate(n, fn j => if i = j then Expr.const 1.0 else Expr.const 0.0)
 fun scalarS x v = Vector.map (fn e => &(Mult(x, e))) v
 
-                             
+
 fun diff (labled as (_, expr)) n =
     case expr of
         X(_, i)      => directionS n i
@@ -71,3 +62,4 @@ fun forward xs expr =
                             in  (Math.cos ex, scalar (~(Math.sin ex)) ed) end
   in #2(diffEval expr) end
 
+end

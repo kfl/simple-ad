@@ -1,10 +1,10 @@
 structure Expr =
 struct
 
-(* Labled expression with labels of type 'e on sub expressions, and
+(* Labelled expression with labels of type 'e on sub expressions, and
    labels of type 'v on variables. Constants are unlabled.
 *)
-datatype ('e, 'v) Labled =
+datatype ('e, 'v) Labelled =
            X    of 'v * int
          | Con  of real
          | Neg  of ('e, 'v) Expr
@@ -13,7 +13,7 @@ datatype ('e, 'v) Labled =
          | Exp  of ('e, 'v) Expr         (* e^x *)
          | Sin  of ('e, 'v) Expr         (* sin x *)
          | Cos  of ('e, 'v) Expr         (* cos x *)
-withtype ('e, 'v) Expr = 'e * ('e, 'v) Labled
+withtype ('e, 'v) Expr = 'e * ('e, 'v) Labelled
 
 
 
@@ -37,7 +37,7 @@ fun eval (_, exp) xs =
 fun unit_elab e = ((), e)
 val & = unit_elab
 
-val const = & o Con
+fun const e = &(Con e)
 
 fun ref_elab e = (ref NONE, e)
 
@@ -84,13 +84,6 @@ fun bigTime ad esize n_vars x0 =
   let val xs = Vector.tabulate(n_vars, fn i => if i = 0 then x0 else 0.0)
   in  lookup (Mosml.time (ad xs) (makeExpr ref_elab uvar esize)) 0
   end
-
-
-
-
-
-
-
 
 
 fun makeFib elab vlab n =
