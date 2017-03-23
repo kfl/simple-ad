@@ -77,4 +77,4 @@ fun makeExpr n =
 
 val small = makeExpr 2
 
-fun bigTime ad n = Mosml.time (ad (makeExpr n)) 1.0
+fun bigTime ad n x0 = Mosml.time (ad (makeExpr n)) x0
