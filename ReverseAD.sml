@@ -1,7 +1,7 @@
 local
     datatype Labelled = datatype Expr.Labelled
 in
-                               
+
 (* evalDecorate label each sub expression with its evaluation *)
 fun evalDecorate xs expr =
   let fun decorate (_, expr) =
@@ -81,30 +81,29 @@ fun reverse xs expr =
 
 
 (* derivativeDecorate and reduce can be fused *)
-fun derivativeReduce n expr =
+fun derivativeReduce get_eval n expr =
   let infix +=
       fun (arr, i) += x = Array.update(arr, i, Array.sub(arr, i) + x)
-                                 
+
       val result = Array.array(n, 0.0)
 
       fun trav deri (_, expr) =
         case expr of
-            X(_, i)      => (result, i) += deri
-          | Con c        => ()
-          | Neg e        => trav (~deri) e
-          | Plus(e1, e2) => ( trav deri e1
-                            ; trav deri e2
-                            )
-          | Mult(e1 as (r1, _), e2 as (r2, _)) =>
-                            ( trav (r2 * deri) e1
-                            ; trav (r1 * deri) e2
-                            )
-          | Exp (e as (r, _)) =>
-                            trav (Math.exp r * deri) e
-          | Sin (e as (r, _)) =>
-                            trav (Math.cos r * deri) e
-          | Cos (e as (r, _)) =>
-                            trav (~(Math.sin r) * deri) e
+            X(_, i)             => (result, i) += deri
+          | Con c               => ()
+          | Neg e               => trav (~deri) e
+          | Plus(e1, e2)        => ( trav deri e1
+                                   ; trav deri e2
+                                   )
+          | Mult(e1 as (lab1, _), e2 as (lab2, _)) =>
+            let val r1 = get_eval lab1
+                val r2 = get_eval lab2
+            in trav (r2 * deri) e1
+             ; trav (r1 * deri) e2
+            end
+          | Exp (e as (lab, _)) => trav (Math.exp (get_eval lab) * deri) e
+          | Sin (e as (lab, _)) => trav (Math.cos (get_eval lab) * deri) e
+          | Cos (e as (lab, _)) => trav (~(Math.sin (get_eval lab)) * deri) e
   in   trav 1.0 expr
      ; Array.vector result
   end
@@ -112,7 +111,7 @@ fun derivativeReduce n expr =
 fun reverse_fused xs expr =
   let val n = Vector.length xs
       val ed = evalDecorate xs expr
-  in  derivativeReduce n ed
+  in  derivativeReduce (fn x => x) n ed
   end
 
 
@@ -120,13 +119,13 @@ fun reverse_fused xs expr =
 
 
 
-(* Problem: evalDecorate destroys sharing *)      
+(* Problem: evalDecorate destroys sharing *)
 
-      
+
 (* evalUpdate update each sub expression label with its evaluation *)
 fun evalUpdate xs expr =
   let fun eval (ref(SOME v), _) = v
-        | eval (lab, expr) = 
+        | eval (lab, expr) =
           let val res =
                   case expr of
                       X(_, i)      => Expr.lookup xs i
@@ -142,40 +141,14 @@ fun evalUpdate xs expr =
           end
   in  eval expr
   end
-      
-fun derivativeReduce2 n expr =
-  let infix +=
-      fun (arr, i) += x = Array.update(arr, i, Array.sub(arr, i) + x)
-                                 
-      val result = Array.array(n, 0.0)
 
-      fun trav deri (_, expr) =
-        case expr of
-            X(_, i)      => (result, i) += deri
-          | Con c        => ()
-          | Neg e        => trav (~deri) e
-          | Plus(e1, e2) => ( trav deri e1
-                            ; trav deri e2
-                            )
-          | Mult(e1 as (ref(SOME r1), _), e2 as (ref(SOME r2), _)) =>
-                            ( trav (r2 * deri) e1
-                            ; trav (r1 * deri) e2
-                            )
-          | Exp (e as (ref(SOME r), _)) =>
-                            trav (Math.exp r * deri) e
-          | Sin (e as (ref(SOME r), _)) =>
-                            trav (Math.cos r * deri) e
-          | Cos (e as (ref(SOME r), _)) =>
-                            trav (~(Math.sin r) * deri) e
-          | _ => raise Fail "Unevaluated expression found" 
-  in   trav 1.0 expr
-     ; Array.vector result
-  end
 
 fun reverse_imp xs expr =
   let val n = Vector.length xs
       val _ = evalUpdate xs expr
-  in  derivativeReduce2 n expr
+      fun get_eval (ref(SOME r)) = r
+        | get_eval _ = raise Fail "Unevaluated expression found"
+  in  derivativeReduce get_eval n expr
   end
 
 end
