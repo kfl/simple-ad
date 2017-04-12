@@ -1,8 +1,8 @@
 SML Implementation of Automatic Differentiation
 ===============================================
 
-Ken's simple-minded and (hopefully) easy to understand implementation
-of AD. The implementation is done in SML for two reasons:
+Simple-minded and (hopefully) easy to understand implementation of
+AD. The implementation is done in SML for two reasons:
 
  * To make sure that no "advanced" language features was used by
    accident (looking at you Haskell). Thus, everything should be
