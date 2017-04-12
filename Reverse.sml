@@ -120,8 +120,6 @@ fun reverse_fused xs expr =
 
 
 (* Problem: evalDecorate destroys sharing *)
-
-
 (* evalUpdate update each sub expression label with its evaluation *)
 fun evalUpdate xs expr =
   let fun eval (ref(SOME v), _) = v
