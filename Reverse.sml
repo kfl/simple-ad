@@ -1,3 +1,5 @@
+structure Reverse =
+struct
 local
     datatype Labelled = datatype Expr.Labelled
 in
@@ -149,4 +151,5 @@ fun reverse_imp xs expr =
   in  derivativeReduce get_eval n expr
   end
 
+end
 end

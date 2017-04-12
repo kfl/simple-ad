@@ -1,3 +1,5 @@
+structure Forward =
+struct
 local
     datatype Labelled = datatype Expr.Labelled
     fun & e = Expr.unit_elab e
@@ -62,4 +64,5 @@ fun forward xs expr =
                             in  (Math.cos ex, scalar (~(Math.sin ex)) ed) end
   in #2(diffEval expr) end
 
+end
 end
